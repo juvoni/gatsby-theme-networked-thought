@@ -1,10 +1,4 @@
-import type { CreateSchemaCustomizationArgs, GatsbyNode } from "gatsby";
-
-const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] = ({
-  actions,
-  reporter,
-}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-CreateSchemaCustomizationArgs): any => {
+const createSchemaCustomization = ({ actions, reporter }) => {
   const { createTypes } = actions;
 
   const typeDefs = `
@@ -27,8 +21,8 @@ CreateSchemaCustomizationArgs): any => {
     }
   `;
 
-  reporter.info("Networked Thought: setting up schema...");
+  reporter.info('Networked Thought: setting up schema...');
   createTypes(typeDefs);
 };
 
-export default createSchemaCustomization;
+module.exports = createSchemaCustomization;

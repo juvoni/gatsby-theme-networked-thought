@@ -1,15 +1,12 @@
-// import { unstable_renderSubtreeIntoContainer } from "react-dom";
-import html from "rehype-stringify";
-import gfm from "remark-gfm";
-import markdown from "remark-parse";
-import remark2rehype from "remark-rehype";
-import stringifyMd from "remark-stringify";
-import unified from "unified";
-// eslint-disable-next-line import/no-unresolved
-import type { Node, Parent } from "unist";
+// const { unstable_renderSubtreeIntoContainer } = require('react-dom');
+const html = require('rehype-stringify');
+const gfm = require('remark-gfm');
+const markdown = require('remark-parse');
+const remark2rehype = require('remark-rehype');
+const stringifyMd = require('remark-stringify');
+const unified = require('unified');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function findDeepestChildForPosition(parent: any, tree: any, position: number): any {
+function findDeepestChildForPosition(parent, tree, position) {
   if (!tree.children || tree.children.length == 0) {
     return {
       parent: parent,
@@ -39,26 +36,25 @@ function findDeepestChildForPosition(parent: any, tree: any, position: number): 
   };
 }
 
-function textNoEscaping(this: unified.Processor) {
+function textNoEscaping() {
   const Compiler = this.Compiler;
   const visitors = Compiler.prototype.visitors;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function f(this: any, node: Node, _parent?: Parent) {
+  function f(node, _parent) {
     return this.encode(node, node).value;
   }
 
   visitors.text = f;
 }
 
-export function generatePreviewMarkdown(tree: Node, position: number) {
-  let { parent } = findDeepestChildForPosition(null, tree as Parent, position);
+function generatePreviewMarkdown(tree, position) {
+  let { parent } = findDeepestChildForPosition(null, tree, position);
 
   if (parent) {
     // Adding this logic to avoid including too large an amount of content. May need additional heuristics to improve this
     // Right now it essentially will just capture the bullet point or paragraph where it is mentioned.
     const maxDepth = 2;
-    for (let i = 0; i < maxDepth && parent.parent != null && parent.parent.node.type !== "root"; i++) {
+    for (let i = 0; i < maxDepth && parent.parent != null && parent.parent.node.type !== 'root'; i++) {
       parent = parent.parent;
     }
   }
@@ -67,7 +63,7 @@ export function generatePreviewMarkdown(tree: Node, position: number) {
   return processor.stringify(parent ? parent.node : tree);
 }
 
-export function generatePreviewHtml(markdownText: string) {
+function generatePreviewHtml(markdownText) {
   const previewHtml = unified()
     .use(markdown)
     .use(gfm)
@@ -77,4 +73,9 @@ export function generatePreviewHtml(markdownText: string) {
     .toString();
 
   return previewHtml;
+}
+
+module.exports = {
+  generatePreviewMarkdown,
+  generatePreviewHtml,
 }

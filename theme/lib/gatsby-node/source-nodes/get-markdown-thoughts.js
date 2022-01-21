@@ -1,65 +1,42 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import type { PluginOptions } from "../plugin-options-schema";
+const fs = require('fs');
+const path = require('path');
+const matter = require('gray-matter');
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === 'production';
 
-function stringToRegExp(value: string): RegExp {
-  if (typeof value === "string") {
+function stringToRegExp(value) {
+  if (typeof value === 'string') {
     return new RegExp(`^${value}$`);
   }
   return value;
 }
 
-const matches = (filename: string) => (regExp: RegExp) => regExp.test(filename);
-const doesNotMatchAny = (regExps: RegExp[]) => (filename: string) => !regExps.some(matches(filename));
+const matches = (filename) => (regExp) => regExp.test(filename);
+const doesNotMatchAny = (regExps) => (filename) => !regExps.some(matches(filename));
 
-function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
+function getAllFiles(dirPath, arrayOfFiles = []) {
   const files = fs.readdirSync(dirPath);
 
   arrayOfFiles = arrayOfFiles || [];
 
   files.forEach((file) => {
-    if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-      arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
+    if (fs.statSync(dirPath + '/' + file).isDirectory()) {
+      arrayOfFiles = getAllFiles(dirPath + '/' + file, arrayOfFiles);
     } else {
-      arrayOfFiles.push(path.join(dirPath, "/", file));
+      arrayOfFiles.push(path.join(dirPath, '/', file));
     }
   });
 
   return arrayOfFiles;
 }
 
-export type ThoughtFrontmatter = {
-  title?: string;
-  aliases?: string[];
-  private?: boolean;
-  hidden?: boolean;
-  showReferences?: boolean;
-};
-
-export type MarkdownThought = {
-  birthtime: Date;
-  mtime: Date;
-  filename: string;
-  fullPath: string;
-  slug: string;
-  name: string;
-  frontmatter: ThoughtFrontmatter;
-  rawContent: string;
-  content: string;
-};
-
-// See https://stackoverflow.com/questions/43118692/typescript-filter-out-nulls-from-an-array
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+function notEmpty(value) {
   if (value === null || value === undefined) return false;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testDummy: TValue = value;
+  const testDummy = value;
   return true;
 }
 
-export default function getMarkdownThoughts({
+module.exports = function getMarkdownThoughts({
   thoughtsDirectory,
   generateSlug,
   exclude,
@@ -67,7 +44,7 @@ export default function getMarkdownThoughts({
   privateMarkdown,
   showPrivateLocally,
   showHiddenLocally,
-}: PluginOptions): MarkdownThought[] {
+}) {
   const exclusions = (exclude && exclude.map(stringToRegExp)) || [];
   const privates = (excludeAsPrivate && excludeAsPrivate.map(stringToRegExp)) || [];
   const filenames = getAllFiles(thoughtsDirectory).map((filename) => filename.slice(thoughtsDirectory.length));
@@ -77,16 +54,16 @@ export default function getMarkdownThoughts({
 
   return filenames
     .filter((filename) => {
-      return [".md", ".mdx"].includes(path.extname(filename).toLowerCase());
+      return ['.md', '.mdx'].includes(path.extname(filename).toLowerCase());
     })
     .filter(doesNotMatchAny(exclusions))
-    .map<MarkdownThought | null>((filename) => {
+    .map((filename) => {
       const { dir, name } = path.parse(filename);
       const noteName = path.join(dir, name);
       const slug = generateSlug(noteName);
       const fullPath = thoughtsDirectory + filename;
       const { birthtime, mtime } = fs.statSync(fullPath);
-      const rawContent = fs.readFileSync(fullPath, "utf-8");
+      const rawContent = fs.readFileSync(fullPath, 'utf-8');
       const { content, data: frontmatter } = matter(rawContent);
       if (frontmatter.hidden && !showHidden) {
         return null;
@@ -99,8 +76,7 @@ export default function getMarkdownThoughts({
         fullPath,
         slug,
         name: noteName,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        frontmatter: (frontmatter as any) as ThoughtFrontmatter,
+        frontmatter: frontmatter,
       };
 
       const isPrivate = frontmatter.private == true || privates.some(matches(filename));
