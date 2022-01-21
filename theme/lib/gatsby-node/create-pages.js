@@ -30,6 +30,7 @@ const createPages = async ({ graphql, actions, reporter }, options) => {
   const nodes = (result.data?.thoughts || {}).nodes || [];
   nodes.forEach((node) => {
     const { id, slug, title, absolutePath } = node;
+
     if (slug == rootThought || title == rootThought) {
       reporter.info(`Creating root ${rootPath} thought page: ${slug}`);
       createPage({
@@ -41,7 +42,7 @@ const createPages = async ({ graphql, actions, reporter }, options) => {
 
     reporter.info(`Creating thought page: ${slug}`);
     createPage({
-      path: slug,
+      path: `${rootPath}/${slug}`,
       component: template,
       context: { id, title, slug, absolutePath },
     });
