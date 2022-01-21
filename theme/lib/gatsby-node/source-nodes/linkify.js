@@ -1,11 +1,9 @@
-import type { PluginOptions } from "../plugin-options-schema";
-
 function processRegExps(
-  regexpInclusive: RegExp,
-  regexpExclusive: RegExp,
-  content: string,
-  nameToSlugMap: Map<string, string>,
-  pluginOptions: PluginOptions,
+  regexpInclusive,
+  regexpExclusive,
+  content,
+  nameToSlugMap,
+  pluginOptions,
 ) {
   const matches = content.match(regexpInclusive);
   if (matches === null) {
@@ -35,11 +33,11 @@ function processRegExps(
   return newContent;
 }
 
-export default function linkify(
-  content: string,
-  nameToSlugMap: Map<string, string>,
-  pluginOptions: PluginOptions,
-): string {
+module.exports = function linkify(
+  content,
+  nameToSlugMap,
+  pluginOptions,
+) {
   // Find matches for content between double brackets
   // e.g. [[Example]] -> Example
   const bracketRegexExclusive = /(?<=\[\[).*?(?=\]\])/g;

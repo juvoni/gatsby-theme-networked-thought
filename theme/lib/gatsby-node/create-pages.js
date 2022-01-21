@@ -1,31 +1,15 @@
-import path from "path";
-import type { GatsbyNode } from "gatsby";
-import type { PluginOptions } from "./plugin-options-schema";
+const path = require('path');
 
-interface CreatePagesQuery {
-  thoughts: {
-    nodes: {
-      id: string;
-      title: string;
-      slug: string;
-      aliases: string[];
-      content: string;
-      absolutePath: string;
-    }[];
-  };
-}
-
-const createPages: GatsbyNode["createPages"] = async ({ graphql, actions, reporter }, options) => {
+const createPages = async ({ graphql, actions, reporter }, options) => {
   if (!options) {
     return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pluginOptions = (options as any) as PluginOptions;
+  const pluginOptions = (options);
 
   const { createPage } = actions;
-  const template = path.resolve(path.join(__dirname, `../templates/thought.tsx`));
-  const result = await graphql<CreatePagesQuery>(`
+  const template = path.resolve(path.join(__dirname, '../../src/templates/thought.tsx'));
+  const result = await graphql(`
     {
       thoughts: allThought {
         nodes {
@@ -46,6 +30,7 @@ const createPages: GatsbyNode["createPages"] = async ({ graphql, actions, report
   const nodes = (result.data?.thoughts || {}).nodes || [];
   nodes.forEach((node) => {
     const { id, slug, title, absolutePath } = node;
+
     if (slug == rootThought || title == rootThought) {
       reporter.info(`Creating root ${rootPath} thought page: ${slug}`);
       createPage({
@@ -57,11 +42,11 @@ const createPages: GatsbyNode["createPages"] = async ({ graphql, actions, report
 
     reporter.info(`Creating thought page: ${slug}`);
     createPage({
-      path: slug,
+      path: `${rootPath}/${slug}`,
       component: template,
       context: { id, title, slug, absolutePath },
     });
   });
 };
 
-export default createPages;
+module.exports = createPages;
