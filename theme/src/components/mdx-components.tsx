@@ -50,7 +50,7 @@ function Image(props: ImageProps) {
   const { src, alt, ...rest } = props;
   const data = useStaticQuery(graphql`
     query ImageComponent {
-      images: allFile {
+      images: allFile(filter: { internal: { mediaType: { in: ["image/png", "image/jpeg"] } } }) {
         nodes {
           relativePath
           name
