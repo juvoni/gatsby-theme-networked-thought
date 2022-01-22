@@ -1,11 +1,12 @@
 {
-  "name": "gatsby-theme-networked-thought",
-  "version": "0.4.2",
+  "name": "@juvoni/gatsby-theme-networked-thought",
+  "description": "New Version of Juvoni Beckford.",
+  "version": "1.2.1",
   "main": "index.js",
-  "author": "Eran Kampf (@ekampf)",
+  "author": "Juvoni Beckford <juvoni.beckford@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ekampf/gatsby-theme-networked-thought.git"
+    "url": "https://github.com/juvoni/gatsby-theme-networked-thought.git"
   },
   "license": "MIT",
   "peerDependencies": {
