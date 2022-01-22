@@ -1,7 +1,7 @@
 {
   "name": "@juvoni/gatsby-theme-networked-thought",
   "description": "Gatsby Notes Child Theme",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "scripts": {
     "build:gatsby": "yarn workspace gatsby-theme-networked-thought build:gatsby",
     "prebuild": "yarn build:gatsby",
