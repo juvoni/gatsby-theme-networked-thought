@@ -24,7 +24,7 @@ function processRegExps(
       const name = text.toLowerCase();
       if (nameToSlugMap.has(name)) {
         const link = nameToSlugMap.get(name);
-        const linkPath = rootPath + link;
+        const linkPath = `${rootPath}/${link}`.replace('//', '/');
         const linkified = `[${text}](${linkPath})`;
         newContent = newContent.split(match).join(linkified);
       }
